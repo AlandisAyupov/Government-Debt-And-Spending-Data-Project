@@ -1,4 +1,4 @@
-Instructions for running the application.:
+Instructions for running the application:
 
 1. Create a python virtual environment + activate virtual environment.
     -See the link on how to do both: https://python.land/virtual-environments/virtualenv 
