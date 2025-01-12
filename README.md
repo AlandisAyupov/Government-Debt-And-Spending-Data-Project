@@ -9,8 +9,10 @@ Instructions for running the application:
 3. Running the project files:
 
     Streamlit:
+
         - In order to run streamlit.py, run 'streamlit run streamlit.py' in the terminal.
 
     Government Debt and Spending:
+    
         - There are several ways you can run this file, check the link below:
         https://www.geeksforgeeks.org/how-to-run-an-ipynb-jupyter-notebook-from-terminal/
