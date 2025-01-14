@@ -10,7 +10,7 @@ Instructions for running the application:
 
     Streamlit:
 
-        - In order to run streamlit.py, run 'streamlit run streamlit.py' in the terminal.
+        - In order to run app.py, run 'streamlit run app.py' in the terminal.
 
     Government Debt and Spending.ipynb:
     
