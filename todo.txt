@@ -1,0 +1,4 @@
+# More things to sort by (quarter, 1 yr, 4 yr, 10 yr).
+# Auto update latest data. (Past 2024).
+# Checkbox peak/lowest point.
+# Standard Deviation, Sum, Medium, Average, %Increase, %Decrease
