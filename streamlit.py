@@ -54,8 +54,8 @@ def aggregate_data(df, metric, freq, years):
         return df
     elif freq == 'Custom' and years:
         df = df.copy()
-        df['CUSTOM_Y'] = df['observation_date'].dt.year // years * years
-        df_agg = df.groupby('CUSTOM_Y').agg({
+        df['observation_date'] = (df['observation_date'].dt.year // years) * years
+        df_agg = df.groupby('observation_date').agg({
             metric: 'last'
         })
         df_agg.index = pd.to_datetime(df_agg.index, format='%Y')
