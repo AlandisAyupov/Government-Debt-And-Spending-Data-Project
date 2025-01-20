@@ -78,6 +78,27 @@ def chart(metric, title, chart_type, freq, years, scale='None'):
         df_agg[metric] = df_agg[metric] * 1000
     elif scale == "Trillions":
         df_agg[metric] = df_agg[metric] / 1000
+
+    # Calculate Standard Deviation, Sum, Median, Percent Increase, and Average
+    std_dev = df_agg[metric].std()
+    sum_metric = df_agg[metric].sum()
+    median_metric = df_agg[metric].median()
+    average_metric = df_agg[metric].mean()
+    percent_increase = ((df_agg[metric].iloc[-1] - df_agg[metric].iloc[0]) / df_agg[metric].iloc[0]) * 100
+
+    # Display metrics in a card
+    st.markdown(
+        f"""
+        <div style="background-color: #f0f0f0; padding: 10px; border-radius: 5px;">
+            <h4>Metrics</h4>
+            <p><strong>Standard Deviation:</strong> {std_dev}</p>
+            <p><strong>Sum:</strong> {sum_metric}</p>
+            <p><strong>Median:</strong> {median_metric}</p>
+            <p><strong>Average:</strong> {average_metric}</p>
+            <p><strong>Percent Change:</strong> {percent_increase}%</p>
+        </div>
+        """, unsafe_allow_html=True
+    )
     
     st.write(title)
     
@@ -105,9 +126,9 @@ chart_type = st.sidebar.selectbox("Select Chart Type", ["Altair", "Seaborn"])
 pages = {
     "Gross Domestic Product": lambda: chart("gdp", "GDP (" + scale + " of Dollars)", chart_type, freq, years if freq == "Custom" else None, scale),
     "Deficit Spending": lambda: chart("deficit_spending", "Deficit Spending (" + scale + " of Dollars)", chart_type, freq, years if freq == "Custom" else None, scale),
-    "Interest Percent of GDP": lambda: chart("interest_percent_of_gdp", "Interest Percent of GDP", chart_type, freq, years if freq == "Custom" else None,  scale),
-    "Debt Percent of GDP": lambda: chart("debt_percent_of_gdp", "Debt Percent of GDP", chart_type, freq, years if freq == "Custom" else None, scale),
-    "Interest Percent of Expenditure": lambda: chart("interest_percent_of_expenditure", "Interest Percent of Expenditure", chart_type, freq, years if freq == "Custom" else None, agg_method, scale)
+    "Interest Percent of GDP": lambda: chart("interest_percent_of_gdp", "Interest Percent of GDP", chart_type, freq, years if freq == "Custom" else None),
+    "Debt Percent of GDP": lambda: chart("debt_percent_of_gdp", "Debt Percent of GDP", chart_type, freq, years if freq == "Custom" else None),
+    "Interest Percent of Expenditure": lambda: chart("interest_percent_of_expenditure", "Interest Percent of Expenditure", chart_type, freq, years if freq == "Custom" else None)
 }
 
 demo = st.sidebar.selectbox("Chart", options=pages.keys(), format_func=lambda x: str(x))
