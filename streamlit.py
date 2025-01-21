@@ -85,31 +85,40 @@ def chart(metric, title, chart_type, freq, years, scale='None'):
     median_metric = df_agg[metric].median()
     average_metric = df_agg[metric].mean()
     percent_increase = ((df_agg[metric].iloc[-1] - df_agg[metric].iloc[0]) / df_agg[metric].iloc[0]) * 100
-
-    # Display metrics in a card
-    st.markdown(
-        f"""
-        <div style="background-color: #f0f0f0; padding: 10px; border-radius: 5px;">
-            <h4>Metrics</h4>
-            <p><strong>Standard Deviation:</strong> {std_dev}</p>
-            <p><strong>Sum:</strong> {sum_metric}</p>
-            <p><strong>Median:</strong> {median_metric}</p>
-            <p><strong>Average:</strong> {average_metric}</p>
-            <p><strong>Percent Change:</strong> {percent_increase}%</p>
-        </div>
-        """, unsafe_allow_html=True
-    )
     
     st.write(title)
     
     if chart_type == "Altair":
-        chart = alt.Chart(df_agg.reset_index()).mark_line().encode(
+        hover = alt.selection_single(
+            fields=["observation_date"],
+            nearest=True,
+            on="mouseover",
+            empty="none",
+        )
+
+        click = alt.selection_single(
+            fields=["observation_date"],
+            nearest=True,
+            on="click",
+            empty="none",
+        )
+
+        drag = alt.selection_interval(
+            encodings=['x']
+        )
+
+        line = alt.Chart(df_agg.reset_index()).mark_line(strokeWidth=5).encode(
             x=alt.X('observation_date:T', title='Date'),
             y=alt.Y(metric, title=title)
         ).properties(
             height=700
         )
-        st.altair_chart(chart, use_container_width=True)
+
+        points = line.mark_point().encode(
+            opacity=alt.condition(hover | click | drag, alt.value(1), alt.value(0))
+        ).add_selection(hover, click, drag)
+
+        st.altair_chart(line + points, use_container_width=True)
     elif chart_type == "Seaborn":
         plt.figure(figsize=(10, 6))
         sns.lineplot(data=df_agg.reset_index(), x='observation_date', y=metric)
@@ -118,6 +127,21 @@ def chart(metric, title, chart_type, freq, years, scale='None'):
         plt.ylabel(metric)
         plt.xticks(rotation=45)
         st.pyplot(plt)
+
+    # Display metrics in a card
+    st.markdown(
+        f"""
+        <div style="background-color: #f9f9f9; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            <h4 style="color: #333;">Metrics</h4>
+            <hr style="border: none; border-top: 1px solid #eee;">
+            <p><strong>Standard Deviation:</strong> {std_dev:.2f}</p>
+            <p><strong>Sum:</strong> {sum_metric:.2f}</p>
+            <p><strong>Median:</strong> {median_metric:.2f}</p>
+            <p><strong>Average:</strong> {average_metric:.2f}</p>
+            <p><strong>Percent Increase:</strong> {percent_increase:.2f}%</p>
+        </div>
+        """, unsafe_allow_html=True
+    )
 
 # SIDEBAR
 chart_type = st.sidebar.selectbox("Select Chart Type", ["Altair", "Seaborn"])
