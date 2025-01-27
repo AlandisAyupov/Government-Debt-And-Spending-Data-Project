@@ -22,17 +22,21 @@ econ_df['interest_percent_of_expenditure'] = econ_df['interest_expenditure']/eco
 econ_df['projected_interest_payments'] = ((econ_df['fed_funds_rate']/100) * (econ_df['govt_debt']/1000))/econ_df['gdp'] * 100
 
 # PAGE CONFIG
+# Sets page title, sets layout to be wide.
 st.set_page_config(page_title="Government Debt and Spending Data", layout="wide")
 
 # WIDGETS
+# Adds logo to dashboard.
 st.logo(image="images/treasury.jpg", 
         icon_image="images/treasury.jpg")
 
 # SEABORN
+# Sets theme.
 sns.set_theme()
 
 # SIDEBAR
 with st.sidebar:
+    # Adds title/header to sidebar.
     st.title("Government Debt and Spending Data")
     st.header("⚙️ Settings")
     
@@ -40,6 +44,7 @@ with st.sidebar:
     max_date = econ_df['observation_date'].max().date()
     default_start_date = min_date
     default_end_date = max_date
+    # Adds date input to sidebar.
     start_date = st.date_input("Start date", default_start_date, min_value=econ_df['observation_date'].min().date(), max_value=max_date)
     end_date = st.date_input("End date", default_end_date, min_value=econ_df['observation_date'].min().date(), max_value=max_date)
 
@@ -54,16 +59,21 @@ def aggregate_data(df, metric, freq, years):
         return df
     elif freq == 'Custom' and years:
         df = df.copy()
+        # Creates a new column 'observation_date' by dividing the year of the existing 'observation_date' by years and multiplying by years.
         df['observation_date'] = (df['observation_date'].dt.year // years) * years
+        # Applies last aggregation to the metric column.
         df_agg = df.groupby('observation_date').agg({
             metric: 'last'
         })
+        # Converts the index to datetime format.
         df_agg.index = pd.to_datetime(df_agg.index, format='%Y')
         return df_agg
     else:
+        # Applies last aggregation to the metric column.
         return df.resample(freq, on='observation_date').agg({
             metric: 'last'
         })
+
 
 # CHARTS
 def chart(metric, title, chart_type, freq, years, scale='None'):
@@ -119,6 +129,7 @@ def chart(metric, title, chart_type, freq, years, scale='None'):
         ).add_selection(hover, click, drag)
 
         st.altair_chart(line + points, use_container_width=True)
+        
     elif chart_type == "Seaborn":
         plt.figure(figsize=(10, 6))
         sns.lineplot(data=df_agg.reset_index(), x='observation_date', y=metric)

@@ -1,2 +1,1 @@
-# Auto update latest data. (Past 2024).
-# Checkbox peak/lowest point.
+# Drag properties
